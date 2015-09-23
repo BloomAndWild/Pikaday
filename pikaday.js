@@ -1042,11 +1042,7 @@
                 if (this._o.bound) {
                     removeEvent(document, 'click', this._onClick);
                 }
-                // disables reset to prevent bug on b&w.com
-                // https://trello.com/c/3bhL4O4V/1117-pressing-date-picker-takes-you-back-to-top-chrome-windows
-                // this.el.style.position = 'static'; // reset
-                // this.el.style.left = 'auto';
-                // this.el.style.top = 'auto';
+
                 addClass(this.el, 'is-hidden');
                 this._v = false;
                 if (v !== undefined && typeof this._o.onClose === 'function') {
