@@ -418,7 +418,7 @@
                 return;
             }
 
-            if (!hasClass(target.parentNode, 'is-disabled')) {
+            if (!hasClass(target, 'is-disabled')) {
                 if (hasClass(target, 'pika-button') && !hasClass(target, 'is-empty')) {
                     self.setDate(new Date(target.getAttribute('data-pika-year'), target.getAttribute('data-pika-month'), target.getAttribute('data-pika-day')));
                     if (opts.bound) {
@@ -429,7 +429,6 @@
                             }
                         }, 100);
                     }
-                    return;
                 }
                 else if (hasClass(target, 'pika-prev')) {
                     self.prevMonth();
@@ -439,6 +438,7 @@
                 }
             }
             if (!hasClass(target, 'pika-select')) {
+                // if this is touch event prevent mouse events emulation
                 if (e.preventDefault) {
                     e.preventDefault();
                 } else {
@@ -544,7 +544,8 @@
         self.el = document.createElement('div');
         self.el.className = 'pika-single' + (opts.isRTL ? ' is-rtl' : '') + (opts.theme ? ' ' + opts.theme : '');
 
-        addEvent(self.el, 'ontouchend' in document ? 'touchend' : 'mousedown', self._onMouseDown, true);
+        addEvent(self.el, 'mousedown', self._onMouseDown, true);
+        addEvent(self.el, 'touchend', self._onMouseDown, true);
         addEvent(self.el, 'change', self._onChange);
 
         if (opts.field) {
@@ -638,9 +639,7 @@
                 this.setMinDate(opts.minDate);
             }
             if (opts.maxDate) {
-                setToStartOfDay(opts.maxDate);
-                opts.maxYear  = opts.maxDate.getFullYear();
-                opts.maxMonth = opts.maxDate.getMonth();
+                this.setMaxDate(opts.maxDate);
             }
 
             if (isArray(opts.yearRange)) {
@@ -828,6 +827,7 @@
             this._o.minDate = value;
             this._o.minYear  = value.getFullYear();
             this._o.minMonth = value.getMonth();
+            this.draw();
         },
 
         /**
@@ -835,7 +835,11 @@
          */
         setMaxDate: function(value)
         {
+            setToStartOfDay(value);
             this._o.maxDate = value;
+            this._o.maxYear = value.getFullYear();
+            this._o.maxMonth = value.getMonth();
+            this.draw();
         },
 
         setStartRange: function(value)
@@ -1058,6 +1062,7 @@
         {
             this.hide();
             removeEvent(this.el, 'mousedown', this._onMouseDown, true);
+            removeEvent(this.el, 'touchend', this._onMouseDown, true);
             removeEvent(this.el, 'change', this._onChange);
             if (this._o.field) {
                 removeEvent(this._o.field, 'change', this._onInputChange);
