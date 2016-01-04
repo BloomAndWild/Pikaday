@@ -799,6 +799,9 @@
         {
             this.calendars[0].month++;
             this.adjustCalendars();
+            if (typeof this.nextMonthCallback != "undefined") {
+              this.nextMonthCallback();
+            }
         },
 
         prevMonth: function()
@@ -1075,6 +1078,8 @@
             if (this.el.parentNode) {
                 this.el.parentNode.removeChild(this.el);
             }
+
+            this.nextMonthCallback = undefined;
         }
 
     };
